@@ -4,8 +4,8 @@ import {
   getLibros,
   createLibro,
   updateLibro,
+  getLibroById,
 } from "./backend/libroController.js";
-import {getLibros, getLibroById } from "./backend/libroController.js";
 
 const app = express();
 

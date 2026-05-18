@@ -6,7 +6,7 @@ export default function EditarLibros() {
     nombre: "",
     descripcion: "",
     categoria: "",
-    cantidad: "",
+    disponibilidad: "",
   });
 
   function handleChange(
@@ -33,7 +33,7 @@ export default function EditarLibros() {
             nombre: formData.nombre,
             descripcion: formData.descripcion,
             categoria: formData.categoria,
-            cantidad: Number(formData.cantidad),
+            disponibilidad: formData.disponibilidad,
           }),
         }
       );
@@ -92,10 +92,10 @@ export default function EditarLibros() {
         />
 
         <input
-          type="number"
-          name="cantidad"
-          placeholder="Cantidad"
-          value={formData.cantidad}
+          type="text"
+          name="disponibilidad"
+          placeholder="Disponibilidad"
+          value={formData.disponibilidad}
           onChange={handleChange}
           className="w-full rounded-lg border p-3"
         />

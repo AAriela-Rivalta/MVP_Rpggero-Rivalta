@@ -11,16 +11,16 @@ export async function insertLibro(libro) {
     nombre,
     descripcion,
     categoria,
-    cantidad,
+    disponibilidad,
   } = libro;
 
   const [result] = await pool.query(
     `
     INSERT INTO libros
-    (nombre, descripcion, categoria, cantidad)
+    (nombre, descripcion, categoria, disponibilidad)
     VALUES (?, ?, ?, ?)
     `,
-    [nombre, descripcion, categoria, cantidad]
+    [nombre, descripcion, categoria, disponibilidad]
   );
 
   return result;
@@ -31,7 +31,7 @@ export async function editLibro(id, libro) {
     nombre,
     descripcion,
     categoria,
-    cantidad,
+    disponibilidad,
   } = libro;
 
   const [result] = await pool.query(
@@ -41,10 +41,10 @@ export async function editLibro(id, libro) {
       nombre = ?,
       descripcion = ?,
       categoria = ?,
-      cantidad = ?
+      disponibilidad = ?
     WHERE id = ?
     `,
-    [nombre, descripcion, categoria, cantidad, id]
+    [nombre, descripcion, categoria, disponibilidad, id]
   );
 
   return result;

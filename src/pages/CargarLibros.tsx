@@ -5,7 +5,7 @@ export default function CargarLibros() {
     nombre: "",
     descripcion: "",
     categoria: "",
-    cantidad: "",
+    disponibilidad: "",
   });
 
   function handleChange(
@@ -28,7 +28,7 @@ export default function CargarLibros() {
         },
         body: JSON.stringify({
           ...formData,
-          cantidad: Number(formData.cantidad),
+          disponibilidad: formData.disponibilidad === "true",
         }),
       });
 
@@ -41,7 +41,7 @@ export default function CargarLibros() {
           nombre: "",
           descripcion: "",
           categoria: "",
-          cantidad: "",
+          disponibilidad: "",
         });
       } else {
         alert("Error al cargar libro");
@@ -84,10 +84,10 @@ export default function CargarLibros() {
         />
 
         <input
-          type="number"
-          name="cantidad"
-          placeholder="Cantidad"
-          value={formData.cantidad}
+          type="text"
+          name="disponibilidad"
+          placeholder="Disponibilidad"
+          value={formData.disponibilidad}
           onChange={handleChange}
           className="w-full rounded-lg border p-3"
         />

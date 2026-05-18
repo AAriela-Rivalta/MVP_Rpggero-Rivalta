@@ -2,8 +2,8 @@ import {
   findAllLibros,
   insertLibro,
   editLibro,
+  findLibroById,
 } from "./libroModel.js";
-import { findAllLibros, findLibroById } from "./libroModel.js";
 
 export async function getLibros(req, res) {
   try {

@@ -25,7 +25,7 @@ export default function LibrosPage() {
           nombre={libro.nombre}
           descripcion={libro.descripcion}
           categoria={libro.categoria}
-          cantidad={libro.cantidad}
+          disponibilidad={libro.disponibilidad}
         />
       ))}
     </div>

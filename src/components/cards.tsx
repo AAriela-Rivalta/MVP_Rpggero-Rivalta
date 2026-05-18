@@ -3,7 +3,7 @@ type CardProps = {
   nombre: string;
   descripcion: string;
   categoria: string;
-  cantidad: number;
+  disponibilidad: boolean;
 };
 
 export default function Cards({
@@ -11,7 +11,7 @@ export default function Cards({
   nombre,
   descripcion,
   categoria,
-  cantidad,
+  disponibilidad,
 }: CardProps) {
   
   function verDetalle() {
@@ -69,7 +69,7 @@ ${fechaDevolucion}
 
           <p>
             <span className="font-semibold">Estado:</span>{" "}
-            {cantidad > 0 ? (
+            {disponibilidad? (
               <span className="text-green-600 font-semibold">Disponible</span>
             ) : (
               <span className="text-red-600 font-semibold">No disponible</span>
