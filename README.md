@@ -73,6 +73,6 @@ export default defineConfig([
 ```
 
 Inicia el backend en otra terminal:
-pnpm serve:api
+pnpm run dev serve:api
 Luego, corre el frontend:
-pnpm dev
+pnpm run dev

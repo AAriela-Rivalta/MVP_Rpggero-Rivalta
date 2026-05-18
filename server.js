@@ -1,5 +1,5 @@
 import express from "express";
-import { getLibros } from "./backend/libroController.js";
+import { getLibros, getLibroById } from "./backend/libroController.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -15,6 +15,7 @@ app.use((req, res, next) => {
 });
 
 app.get("/api/libros", getLibros);
+app.get("/api/libros/:id", getLibroById);
 
 app.listen(PORT, () => {
   console.log(`Backend API escuchando en http://localhost:${PORT}`);
