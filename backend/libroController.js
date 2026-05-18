@@ -1,12 +1,9 @@
-<<<<<<< HEAD
 import {
   findAllLibros,
   insertLibro,
   editLibro,
 } from "./libroModel.js";
-=======
 import { findAllLibros, findLibroById } from "./libroModel.js";
->>>>>>> origin/feat/coneccion-bd
 
 export async function getLibros(req, res) {
   try {
