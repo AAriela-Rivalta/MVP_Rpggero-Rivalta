@@ -5,6 +5,7 @@ import {
   createLibro,
   updateLibro,
 } from "./backend/libroController.js";
+import {getLibros, getLibroById } from "./backend/libroController.js";
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use((req, res, next) => {
 });
 
 app.get("/api/libros", getLibros);
+app.get("/api/libros/:id", getLibroById);
 
 app.post("/api/libros", createLibro);
 
