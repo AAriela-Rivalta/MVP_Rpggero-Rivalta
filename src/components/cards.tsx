@@ -13,7 +13,6 @@ export default function Cards({
   categoria,
   disponibilidad,
 }: CardProps) {
-  
   function verDetalle() {
     alert(`
 Libro: ${nombre}
@@ -26,18 +25,18 @@ ${categoria}
   `);
   }
 
- function solicitarPrestamo() {
-  const persona = prompt("Nombre de la persona:");
+  function solicitarPrestamo() {
+    const persona = prompt("Nombre de la persona:");
 
-  if (!persona) return;
+    if (!persona) return;
 
-  const fechaPrestamo = new Date().toLocaleDateString();
+    const fechaPrestamo = new Date().toLocaleDateString();
 
-  const fechaDevolucion = new Date(
-    Date.now() + 7 * 24 * 60 * 60 * 1000
-  ).toLocaleDateString();
+    const fechaDevolucion = new Date(
+      Date.now() + 7 * 24 * 60 * 60 * 1000,
+    ).toLocaleDateString();
 
-  alert(`
+    alert(`
 Préstamo registrado
 
 Libro: ${nombre}
@@ -51,7 +50,7 @@ ${fechaPrestamo}
 Fecha devolución:
 ${fechaDevolucion}
   `);
-}
+  }
 
   return (
     <article className="flex h-full flex-col justify-between rounded-xl border border-slate-200 bg-white p-5 shadow-md transition hover:shadow-lg">
@@ -69,7 +68,7 @@ ${fechaDevolucion}
 
           <p>
             <span className="font-semibold">Estado:</span>{" "}
-            {disponibilidad? (
+            {disponibilidad ? (
               <span className="text-green-600 font-semibold">Disponible</span>
             ) : (
               <span className="text-red-600 font-semibold">No disponible</span>
@@ -91,6 +90,13 @@ ${fechaDevolucion}
           className="rounded-lg bg-emerald-600 px-4 py-2 text-white transition hover:bg-emerald-500"
         >
           Solicitar
+        </button>
+
+        <button
+          onClick={() => (window.location.href = `/editar/${id}`)}
+          className="rounded-lg bg-emerald-600 px-4 py-2 text-white transition hover:bg-emerald-500"
+        >
+          Editar
         </button>
       </div>
     </article>
