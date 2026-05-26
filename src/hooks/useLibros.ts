@@ -1,32 +1,23 @@
 import { useEffect, useState } from "react";
-import { fetchLibros } from "../services/api";
+
+import { getLibros } from "../api";
 
 export function useLibros() {
-  const [libros, setLibros] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [libros, setLibros] = useState([]);
 
   useEffect(() => {
-    let mounted = true;
+    async function cargarLibros() {
+      try {
+        const data = await getLibros();
 
-    fetchLibros()
-      .then((data) => {
-        if (mounted) {
-          setLibros(data);
-          setLoading(false);
-        }
-      })
-      .catch((err) => {
-        if (mounted) {
-          setError(err instanceof Error ? err.message : String(err));
-          setLoading(false);
-        }
-      });
+        setLibros(data.rows);
+      } catch (error) {
+        console.error(error);
+      }
+    }
 
-    return () => {
-      mounted = false;
-    };
+    cargarLibros();
   }, []);
 
-  return { libros, loading, error };
+  return { libros };
 }

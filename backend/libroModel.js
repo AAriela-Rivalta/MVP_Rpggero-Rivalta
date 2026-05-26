@@ -27,12 +27,20 @@ export async function insertLibro(libro) {
 }
 
 export async function editLibro(id, libro) {
-  const {
-    nombre,
-    descripcion,
-    categoria,
-    disponibilidad,
-  } = libro;
+  const libroActual = await findLibroById(id);
+
+  const nombre =
+    libro.nombre ?? libroActual.nombre;
+
+  const descripcion =
+    libro.descripcion ?? libroActual.descripcion;
+
+  const categoria =
+    libro.categoria ?? libroActual.categoria;
+
+  const disponibilidad =
+    libro.disponibilidad ??
+    libroActual.disponibilidad;
 
   const [result] = await pool.query(
     `
@@ -44,7 +52,13 @@ export async function editLibro(id, libro) {
       disponibilidad = ?
     WHERE id = ?
     `,
-    [nombre, descripcion, categoria, disponibilidad, id]
+    [
+      nombre,
+      descripcion,
+      categoria,
+      disponibilidad,
+      id,
+    ]
   );
 
   return result;

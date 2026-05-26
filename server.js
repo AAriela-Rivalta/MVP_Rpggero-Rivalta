@@ -7,6 +7,11 @@ import {
   getLibroById,
 } from "./backend/libroController.js";
 
+import {
+  createPrestamo,
+  returnLibro,
+} from "./backend/prestamoController.js";
+
 const app = express();
 
 const PORT = process.env.PORT || 3000;
@@ -24,15 +29,26 @@ app.use((req, res, next) => {
     "Origin, X-Requested-With, Content-Type, Accept"
   );
 
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
+
   next();
 });
 
 app.get("/api/libros", getLibros);
+
 app.get("/api/libros/:id", getLibroById);
 
 app.post("/api/libros", createLibro);
 
 app.put("/api/libros/:id", updateLibro);
+
+app.post("/api/prestamos", createPrestamo);
+
+app.put("/api/devolver/:id", returnLibro);
+
 
 app.listen(PORT, () => {
   console.log(

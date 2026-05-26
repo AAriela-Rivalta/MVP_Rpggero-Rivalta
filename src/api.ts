@@ -1,13 +1,75 @@
-const API_URL = "http://localhost:3000/api/libros";
+const API_URL = "http://localhost:3000/api";
 
-export async function fetchLibros() {
-  const response = await fetch(API_URL);
+// =========================
+// OBTENER LIBROS
+// =========================
 
-  if (!response.ok) {
-    throw new Error("Error al obtener libros");
-  }
+export async function getLibros() {
+  const response = await fetch(`${API_URL}/libros`);
 
-  const data = await response.json();
+  return response.json();
+}
 
-  return data.rows;
+// =========================
+// EDITAR LIBRO
+// =========================
+
+type EditarLibroData = {
+  nombre: string;
+  descripcion: string;
+  categoria: string;
+};
+
+export async function editarLibro(
+  id: number,
+  data: EditarLibroData
+) {
+  const response = await fetch(`${API_URL}/libros/${id}`, {
+    method: "PUT",
+
+    headers: {
+      "Content-Type": "application/json",
+    },
+
+    body: JSON.stringify(data),
+  });
+
+  return response.json();
+}
+
+// =========================
+// PRESTAR LIBRO
+// =========================
+
+type PrestamoData = {
+  libro_id: number;
+  persona: string;
+  fecha_prestamo: string;
+  fecha_devolucion: string;
+};
+
+export async function prestarLibro(data: PrestamoData) {
+  const response = await fetch(`${API_URL}/prestamos`, {
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json",
+    },
+
+    body: JSON.stringify(data),
+  });
+
+  return response.json();
+}
+
+// =========================
+// DEVOLVER LIBRO
+// =========================
+
+export async function devolverLibro(id: number) {
+  const response = await fetch(`${API_URL}/devolver/${id}`, {
+    method: "PUT",
+  });
+
+  return response.json();
 }
