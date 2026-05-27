@@ -21,14 +21,7 @@ export default function LibrosPage() {
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {libros.map((libro: Libro) => (
-        <Cards
-          key={libro.id}
-          id={libro.id}
-          nombre={libro.nombre}
-          descripcion={libro.descripcion}
-          categoria={libro.categoria}
-          disponibilidad={libro.disponibilidad}
-        />
+        <Cards key={libro.id} {...libro} />
       ))}
       <Outlet />
     </div>

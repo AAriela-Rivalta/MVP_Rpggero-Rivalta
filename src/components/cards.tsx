@@ -1,18 +1,16 @@
 import { useState } from "react";
-
-import { prestarLibro, devolverLibro, editarLibro } from "../api";
+// 🌟 Agregamos extenderLibroApi a tus importaciones de la API
+import { prestarLibro, devolverLibro, extenderLibroApi } from "../api";
 import { Link } from "react-router-dom";
 
 type CardProps = {
   id: number;
-
   nombre: string;
-
   descripcion: string;
-
   categoria: string;
-
-  disponibilidad: boolean;
+  disponibilidad: boolean | number;
+  persona?: string;
+  fecha_devolucion?: string;
 };
 
 export default function Cards({
@@ -21,61 +19,52 @@ export default function Cards({
   descripcion,
   categoria,
   disponibilidad,
+  persona,
+  fecha_devolucion,
 }: CardProps) {
-  // =========================
-  // MODALES
-  // =========================
-
   const [showPrestamo, setShowPrestamo] = useState(false);
-
-  // =========================
-  // MENSAJES
-  // =========================
-
   const [mensaje, setMensaje] = useState("");
+  const [nombrePrestamo, setNombrePrestamo] = useState("");
 
-  // =========================
-  // DATOS REALES DEL LIBRO
-  // =========================
+  const isDisponible = disponibilidad === true || disponibilidad === 1;
 
-  const [libroNombre, setLibroNombre] = useState(nombre);
-
-  const [libroDescripcion, setLibroDescripcion] = useState(descripcion);
-
-  const [libroCategoria, setLibroCategoria] = useState(categoria);
-
-  // =========================
-  // DATOS TEMPORALES EDITAR
-  // =========================
-
-  // =========================
-  // PRESTAMO
-  // =========================
-
-  const [persona, setPersona] = useState("");
-
+  // Lógica de fechas base para el modal de préstamo nuevo
   const hoy = new Date();
-
   const fechaPrestamo = hoy.toISOString().split("T")[0];
+  const fechaDevolucionBase = "2026-06-01";
 
-  const fechaDevolucion = "2026-06-01";
+  // ==========================================
+  // 🌟 FUNCIÓN PARA EXTENDER PRÉSTAMO 1 SEMANA
+  // ==========================================
+  async function extenderPrestamoHandler() {
+    try {
+      // Tomamos la fecha de vencimiento actual que viene de la BD o la base de respaldo
+      const fechaActualBase = fecha_devolucion
+        ? new Date(fecha_devolucion)
+        : new Date(fechaDevolucionBase);
 
-  // =========================
-  // DISPONIBILIDAD
-  // =========================
+      // Sumamos automáticamente 7 días sobre el objeto Date
+      fechaActualBase.setDate(fechaActualBase.getDate() + 7);
+      const nuevaFechaDevolucion = fechaActualBase.toISOString().split("T")[0];
 
-  const [prestado, setPrestado] = useState(!disponibilidad);
+      // 🌟 CORRECCIÓN: En lugar de prestarLibro (INSERT), llamamos a tu nueva API de extensión (UPDATE)
+      await extenderLibroApi(id, nuevaFechaDevolucion);
 
-  const [prestadoA, setPrestadoA] = useState("");
+      setMensaje(
+        `Préstamo extendido con éxito hasta el ${nuevaFechaDevolucion}`,
+      );
 
-  const [fechaDevActual, setFechaDevActual] = useState("");
-
-  // =========================
-  // FUNCIONES
-  // =========================
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+    } catch (error) {
+      console.error(error);
+      setMensaje("Error al extender el préstamo");
+    }
+  }
 
   async function confirmarPrestamo() {
-    if (!persona.trim()) {
+    if (!nombrePrestamo.trim()) {
       setMensaje("Debe ingresar un nombre");
       return;
     }
@@ -83,21 +72,14 @@ export default function Cards({
     try {
       await prestarLibro({
         libro_id: id,
-        persona,
+        persona: nombrePrestamo,
         fecha_prestamo: fechaPrestamo,
-        fecha_devolucion: fechaDevolucion,
+        fecha_devolucion: fechaDevolucionBase,
       });
-      setPrestado(true);
 
-      setPrestadoA(persona);
-
-      setFechaDevActual(fechaDevolucion);
-
-      setMensaje(`Libro prestado correctamente a ${persona}`);
-
+      setMensaje(`Libro prestado correctamente a ${nombrePrestamo}`);
       setShowPrestamo(false);
-
-      setPersona("");
+      setNombrePrestamo("");
 
       setTimeout(() => {
         window.location.reload();
@@ -110,13 +92,6 @@ export default function Cards({
   async function devolverLibroHandler() {
     try {
       await devolverLibro(id);
-
-      setPrestado(false);
-
-      setPrestadoA("");
-
-      setFechaDevActual("");
-
       setMensaje("Libro devuelto correctamente");
 
       setTimeout(() => {
@@ -127,28 +102,9 @@ export default function Cards({
     }
   }
 
-  function extenderPrestamo() {
-    const nuevaFecha =
-      prompt("Ingrese nueva fecha de devolución (YYYY-MM-DD)") ||
-      fechaDevActual;
-
-    setFechaDevActual(nuevaFecha);
-
-    setMensaje(`Préstamo extendido hasta ${nuevaFecha}`);
-
-    setTimeout(() => {
-      setMensaje("");
-    }, 3000);
-  }
-
-  // =========================
-  // COMPONENTE
-  // =========================
-
   return (
     <>
-      {/* MENSAJE */}
-
+      {/* MENSAJE FLOTANTE */}
       {mensaje && (
         <div className="fixed right-5 top-5 z-50 rounded-lg bg-emerald-600 px-5 py-3 text-white shadow-lg">
           {mensaje}
@@ -156,49 +112,45 @@ export default function Cards({
       )}
 
       {/* CARD */}
-
       <article className="flex h-full flex-col justify-between rounded-xl border border-slate-200 bg-white p-5 shadow-md transition hover:shadow-lg">
         <div>
-          <h2 className="mb-2 text-2xl font-bold text-slate-800">
-            {libroNombre}
-          </h2>
-
-          <p className="mb-4 text-slate-600">{libroDescripcion}</p>
+          <h2 className="mb-2 text-2xl font-bold text-slate-800">{nombre}</h2>
+          <p className="mb-4 text-slate-600">{descripcion}</p>
 
           <div className="space-y-1 text-sm text-slate-700">
             <p>
-              <span className="font-semibold">Categoría:</span> {libroCategoria}
+              <span className="font-semibold">Categoría:</span> {categoria}
             </p>
 
             <p>
               <span className="font-semibold">Estado:</span>{" "}
-              {prestado ? (
+              {isDisponible ? (
+                <span className="font-semibold text-green-600">Disponible</span>
+              ) : (
                 <span className="font-semibold text-red-600">
                   No disponible
                 </span>
-              ) : (
-                <span className="font-semibold text-green-600">Disponible</span>
               )}
             </p>
 
-            {prestado && (
+            {!isDisponible && (
               <>
                 <p>
                   <span className="font-semibold">Prestado a:</span>{" "}
-                  {prestadoA || "Usuario"}
+                  {persona || "Usuario"}
                 </p>
-
                 <p>
                   <span className="font-semibold">Fecha devolución:</span>{" "}
-                  {fechaDevActual || fechaDevolucion}
+                  {fecha_devolucion
+                    ? fecha_devolucion.split("T")[0]
+                    : fechaDevolucionBase}
                 </p>
               </>
             )}
           </div>
         </div>
 
-        {/* BOTONES */}
-
+        {/* CONTENEDOR DE BOTONES */}
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             to={`/detalle/${id}`}
@@ -207,17 +159,31 @@ export default function Cards({
             Ver detalle
           </Link>
 
-          <button
-            disabled={prestado}
-            onClick={() => setShowPrestamo(true)}
-            className={`rounded-lg px-4 py-2 text-white transition ${
-              prestado
-                ? "cursor-not-allowed bg-gray-400"
-                : "bg-emerald-600 hover:bg-emerald-500"
-            }`}
-          >
-            Solicitar
-          </button>
+          {isDisponible ? (
+            <button
+              onClick={() => setShowPrestamo(true)}
+              className="rounded-lg bg-emerald-600 px-4 py-2 text-white transition hover:bg-emerald-500"
+            >
+              Prestar
+            </button>
+          ) : (
+            <button
+              onClick={devolverLibroHandler}
+              className="rounded-lg bg-orange-500 px-4 py-2 text-white transition hover:bg-orange-400"
+            >
+              Devolver
+            </button>
+          )}
+
+          {/* BOTÓN EXTENDER */}
+          {!isDisponible && (
+            <button
+              onClick={extenderPrestamoHandler}
+              className="rounded-lg bg-purple-600 px-4 py-2 text-white transition hover:bg-purple-500"
+            >
+              Extender
+            </button>
+          )}
 
           <Link
             to={`/editar/${id}`}
@@ -225,31 +191,10 @@ export default function Cards({
           >
             Editar
           </Link>
-
-          {prestado && (
-            <>
-              <button
-                onClick={devolverLibroHandler}
-                className="rounded-lg bg-orange-500 px-4 py-2 text-white transition hover:bg-orange-400"
-              >
-                Devolver
-              </button>
-
-              <button
-                onClick={extenderPrestamo}
-                className="rounded-lg bg-purple-600 px-4 py-2 text-white transition hover:bg-purple-500"
-              >
-                Extender
-              </button>
-            </>
-          )}
         </div>
       </article>
 
-      {/* ========================= */}
-      {/* MODAL PRESTAMO */}
-      {/* ========================= */}
-
+      {/* MODAL SOLICITAR PRESTAMO */}
       {showPrestamo && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-xl rounded-xl bg-white p-6 shadow-xl">
@@ -260,12 +205,11 @@ export default function Cards({
                 <label className="mb-1 block font-semibold">
                   Nombre de la persona
                 </label>
-
                 <input
                   type="text"
                   placeholder="Ingrese nombre"
-                  value={persona}
-                  onChange={(e) => setPersona(e.target.value)}
+                  value={nombrePrestamo}
+                  onChange={(e) => setNombrePrestamo(e.target.value)}
                   className="w-full rounded-lg border p-3"
                 />
               </div>
@@ -275,10 +219,9 @@ export default function Cards({
                   <span className="font-semibold">Fecha préstamo:</span>{" "}
                   {fechaPrestamo}
                 </p>
-
                 <p className="mt-2">
                   <span className="font-semibold">Fecha devolución:</span>{" "}
-                  {fechaDevolucion}
+                  {fechaDevolucionBase}
                 </p>
               </div>
             </div>
@@ -290,7 +233,6 @@ export default function Cards({
               >
                 Confirmar
               </button>
-
               <button
                 onClick={() => setShowPrestamo(false)}
                 className="rounded-lg bg-slate-800 px-4 py-2 text-white"

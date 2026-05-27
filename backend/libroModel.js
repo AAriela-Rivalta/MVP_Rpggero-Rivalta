@@ -1,18 +1,24 @@
 import { pool } from "./db.js";
 
 export async function findAllLibros() {
-  const [rows] = await pool.query("SELECT * FROM libros");
+  const [rows] = await pool.query(`
+    SELECT 
+      l.id, 
+      l.nombre, 
+      l.descripcion, 
+      l.categoria, 
+      l.disponibilidad,
+      p.persona,
+      p.fecha_prestamo,
+      p.fecha_devolucion
+    FROM libros l
+    LEFT JOIN prestamos p ON l.id = p.libro_id
+  `);
   return rows;
 }
 
-
 export async function insertLibro(libro) {
-  const {
-    nombre,
-    descripcion,
-    categoria,
-    disponibilidad,
-  } = libro;
+  const { nombre, descripcion, categoria, disponibilidad } = libro;
 
   const [result] = await pool.query(
     `
@@ -20,7 +26,7 @@ export async function insertLibro(libro) {
     (nombre, descripcion, categoria, disponibilidad)
     VALUES (?, ?, ?, ?)
     `,
-    [nombre, descripcion, categoria, disponibilidad]
+    [nombre, descripcion, categoria, disponibilidad],
   );
 
   return result;
@@ -29,18 +35,13 @@ export async function insertLibro(libro) {
 export async function editLibro(id, libro) {
   const libroActual = await findLibroById(id);
 
-  const nombre =
-    libro.nombre ?? libroActual.nombre;
+  const nombre = libro.nombre ?? libroActual.nombre;
 
-  const descripcion =
-    libro.descripcion ?? libroActual.descripcion;
+  const descripcion = libro.descripcion ?? libroActual.descripcion;
 
-  const categoria =
-    libro.categoria ?? libroActual.categoria;
+  const categoria = libro.categoria ?? libroActual.categoria;
 
-  const disponibilidad =
-    libro.disponibilidad ??
-    libroActual.disponibilidad;
+  const disponibilidad = libro.disponibilidad ?? libroActual.disponibilidad;
 
   const [result] = await pool.query(
     `
@@ -52,13 +53,7 @@ export async function editLibro(id, libro) {
       disponibilidad = ?
     WHERE id = ?
     `,
-    [
-      nombre,
-      descripcion,
-      categoria,
-      disponibilidad,
-      id,
-    ]
+    [nombre, descripcion, categoria, disponibilidad, id],
   );
 
   return result;
