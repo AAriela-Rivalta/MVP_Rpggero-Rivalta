@@ -20,16 +20,20 @@ export const router = createBrowserRouter([
             path: "detalle/:id",
             element: <DetalleLibro />,
           },
+          {
+            path: "editar/:id",
+            element: <EditarLibros />,
+          },
         ],
       },
       {
         path: "cargar",
         element: <CargarLibros />,
       },
-      {
-        path: "editar/:id",
-        element: <EditarLibros />,
-      },
+      // {
+      //   path: "editar/:id",
+      //   element: <EditarLibros />,
+      // },
     ],
   },
 ]);

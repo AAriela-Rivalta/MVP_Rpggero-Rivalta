@@ -32,7 +32,6 @@ export default function DetalleLibro() {
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4">
-      {/* Fondo clickeable para cerrar el modal de forma intuitiva */}
       <div className="absolute inset-0" onClick={() => navigate("/")} />
 
       <div className="relative w-full max-w-xl rounded-xl bg-white p-6 shadow-xl border border-slate-100 z-10">

@@ -28,8 +28,6 @@ export default function Cards({
 
   const [showPrestamo, setShowPrestamo] = useState(false);
 
-  const [showEditar, setShowEditar] = useState(false);
-
   // =========================
   // MENSAJES
   // =========================
@@ -49,12 +47,6 @@ export default function Cards({
   // =========================
   // DATOS TEMPORALES EDITAR
   // =========================
-
-  const [editNombre, setEditNombre] = useState(nombre);
-
-  const [editDescripcion, setEditDescripcion] = useState(descripcion);
-
-  const [editCategoria, setEditCategoria] = useState(categoria);
 
   // =========================
   // PRESTAMO
@@ -81,16 +73,6 @@ export default function Cards({
   // =========================
   // FUNCIONES
   // =========================
-
-  function abrirEditar() {
-    setEditNombre(libroNombre);
-
-    setEditDescripcion(libroDescripcion);
-
-    setEditCategoria(libroCategoria);
-
-    setShowEditar(true);
-  }
 
   async function confirmarPrestamo() {
     if (!persona.trim()) {
@@ -157,32 +139,6 @@ export default function Cards({
     setTimeout(() => {
       setMensaje("");
     }, 3000);
-  }
-
-  async function guardarEdicion() {
-    try {
-      await editarLibro(id, {
-        nombre: editNombre,
-        descripcion: editDescripcion,
-        categoria: editCategoria,
-      });
-
-      setLibroNombre(editNombre);
-
-      setLibroDescripcion(editDescripcion);
-
-      setLibroCategoria(editCategoria);
-
-      setMensaje("Libro actualizado correctamente");
-
-      setShowEditar(false);
-
-      setTimeout(() => {
-        setMensaje("");
-      }, 3000);
-    } catch {
-      setMensaje("Error al actualizar libro");
-    }
   }
 
   // =========================
@@ -263,12 +219,12 @@ export default function Cards({
             Solicitar
           </button>
 
-          <button
-            onClick={abrirEditar}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-500"
+          <Link
+            to={`/editar/${id}`}
+            className="rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-500 text-center"
           >
             Editar
-          </button>
+          </Link>
 
           {prestado && (
             <>
@@ -289,52 +245,6 @@ export default function Cards({
           )}
         </div>
       </article>
-
-      {/* ========================= */}
-      {/* MODAL DETALLE */}
-      {/* ========================= */}
-
-      {/* {showDetalle && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-xl rounded-xl bg-white p-6 shadow-xl">
-            <h2 className="mb-4 text-3xl font-bold">{libroNombre}</h2>
-
-            <p className="mb-4 text-slate-700">{libroDescripcion}</p>
-
-            <div className="space-y-2">
-              <p>
-                <span className="font-semibold">Categoría:</span>{" "}
-                {libroCategoria}
-              </p>
-
-              <p>
-                <span className="font-semibold">Estado:</span>{" "}
-                {prestado ? (
-                  <span className="text-red-600">No disponible</span>
-                ) : (
-                  <span className="text-green-600">Disponible</span>
-                )}
-              </p>
-            </div>
-
-            <div className="mt-5 rounded-lg bg-slate-100 p-4">
-              <p className="font-semibold">Referencia del libro</p>
-
-              <p className="mt-2 text-sm text-slate-600">
-                Este libro forma parte del catálogo oficial de la biblioteca y
-                puede solicitarse para préstamos académicos.
-              </p>
-            </div>
-
-            <button
-              onClick={() => setShowDetalle(false)}
-              className="mt-6 rounded-lg bg-slate-800 px-4 py-2 text-white"
-            >
-              Cerrar
-            </button>
-          </div>
-        </div>
-      )} */}
 
       {/* ========================= */}
       {/* MODAL PRESTAMO */}
@@ -383,68 +293,6 @@ export default function Cards({
 
               <button
                 onClick={() => setShowPrestamo(false)}
-                className="rounded-lg bg-slate-800 px-4 py-2 text-white"
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ========================= */}
-      {/* MODAL EDITAR */}
-      {/* ========================= */}
-
-      {showEditar && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-xl rounded-xl bg-white p-6 shadow-xl">
-            <h2 className="mb-5 text-2xl font-bold">Editar libro</h2>
-
-            <div className="space-y-4">
-              <div>
-                <label className="mb-1 block font-semibold">Título</label>
-
-                <input
-                  type="text"
-                  value={editNombre}
-                  onChange={(e) => setEditNombre(e.target.value)}
-                  className="w-full rounded-lg border p-3"
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block font-semibold">Descripción</label>
-
-                <textarea
-                  value={editDescripcion}
-                  onChange={(e) => setEditDescripcion(e.target.value)}
-                  className="w-full rounded-lg border p-3"
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block font-semibold">Categoría</label>
-
-                <input
-                  type="text"
-                  value={editCategoria}
-                  onChange={(e) => setEditCategoria(e.target.value)}
-                  className="w-full rounded-lg border p-3"
-                />
-              </div>
-            </div>
-
-            <div className="mt-6 flex gap-3">
-              <button
-                onClick={guardarEdicion}
-                className="rounded-lg bg-blue-600 px-4 py-2 text-white"
-              >
-                Guardar
-              </button>
-
-              <button
-                onClick={() => setShowEditar(false)}
                 className="rounded-lg bg-slate-800 px-4 py-2 text-white"
               >
                 Cancelar
