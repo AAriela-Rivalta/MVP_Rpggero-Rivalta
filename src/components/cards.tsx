@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { prestarLibro, devolverLibro, editarLibro } from "../api";
+import { Link } from "react-router-dom";
 
 type CardProps = {
   id: number;
@@ -24,8 +25,6 @@ export default function Cards({
   // =========================
   // MODALES
   // =========================
-
-  const [showDetalle, setShowDetalle] = useState(false);
 
   const [showPrestamo, setShowPrestamo] = useState(false);
 
@@ -245,12 +244,12 @@ export default function Cards({
         {/* BOTONES */}
 
         <div className="mt-6 flex flex-wrap gap-3">
-          <button
-            onClick={() => setShowDetalle(true)}
-            className="rounded-lg bg-slate-800 px-4 py-2 text-white transition hover:bg-slate-700"
+          <Link
+            to={`/detalle/${id}`}
+            className="rounded-lg bg-[#5c493c] px-4 py-2 text-white transition hover:bg-[#493a30]"
           >
             Ver detalle
-          </button>
+          </Link>
 
           <button
             disabled={prestado}
@@ -295,7 +294,7 @@ export default function Cards({
       {/* MODAL DETALLE */}
       {/* ========================= */}
 
-      {showDetalle && (
+      {/* {showDetalle && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-xl rounded-xl bg-white p-6 shadow-xl">
             <h2 className="mb-4 text-3xl font-bold">{libroNombre}</h2>
@@ -335,7 +334,7 @@ export default function Cards({
             </button>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* ========================= */}
       {/* MODAL PRESTAMO */}

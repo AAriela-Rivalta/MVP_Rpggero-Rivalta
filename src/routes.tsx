@@ -5,6 +5,7 @@ import LibrosPage from "./pages/LibrosPage";
 import CargarLibros from "./pages/CargarLibros";
 import EditarLibros from "./pages/EditarLibros";
 import Layout from "./components/layaout";
+import DetalleLibro from "./pages/DetalleLibro";
 
 export const router = createBrowserRouter([
   {
@@ -12,8 +13,14 @@ export const router = createBrowserRouter([
     element: <Layout />,
     children: [
       {
-        index: true,
+        path: "",
         element: <LibrosPage />,
+        children: [
+          {
+            path: "detalle/:id",
+            element: <DetalleLibro />,
+          },
+        ],
       },
       {
         path: "cargar",
