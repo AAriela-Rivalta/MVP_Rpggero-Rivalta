@@ -1,15 +1,19 @@
 import { useState } from "react";
+// 🌟 1. IMPORTAMOS EL HOOK DE NAVEGACIÓN
+import { useNavigate } from "react-router-dom";
 
 export default function CargarLibros() {
+  // 🌟 2. INICIALIZAMOS EL NAVIGATE
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     nombre: "",
     descripcion: "",
     categoria: "",
-    disponibilidad: "",
   });
 
   function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) {
     setFormData({
       ...formData,
@@ -28,7 +32,7 @@ export default function CargarLibros() {
         },
         body: JSON.stringify({
           ...formData,
-          disponibilidad: formData.disponibilidad === "true",
+          disponibilidad: true, // Mandamos el booleano limpio que arregló el bug
         }),
       });
 
@@ -41,8 +45,13 @@ export default function CargarLibros() {
           nombre: "",
           descripcion: "",
           categoria: "",
-          disponibilidad: "",
         });
+
+        // 🌟 3. REDIRECCIÓN AUTOMÁTICA AL CATÁLOGO (Ruta Raíz "/")
+        navigate("/");
+
+        // Opcional: Si necesitás forzar la recarga para actualizar el catálogo
+        window.location.reload();
       } else {
         alert("Error al cargar libro");
       }
@@ -64,6 +73,7 @@ export default function CargarLibros() {
           value={formData.nombre}
           onChange={handleChange}
           className="w-full rounded-lg border p-3"
+          required
         />
 
         <textarea
@@ -72,6 +82,7 @@ export default function CargarLibros() {
           value={formData.descripcion}
           onChange={handleChange}
           className="w-full rounded-lg border p-3"
+          required
         />
 
         <input
@@ -81,23 +92,26 @@ export default function CargarLibros() {
           value={formData.categoria}
           onChange={handleChange}
           className="w-full rounded-lg border p-3"
+          required
         />
 
-        <input
-          type="text"
-          name="disponibilidad"
-          placeholder="Disponibilidad"
-          value={formData.disponibilidad}
-          onChange={handleChange}
-          className="w-full rounded-lg border p-3"
-        />
+        <div className="mt-6 flex gap-3">
+          <button
+            type="submit"
+            className="rounded-lg bg-emerald-600 px-5 py-3 text-white hover:bg-emerald-500 transition cursor-pointer"
+          >
+            Guardar Libro
+          </button>
 
-        <button
-          type="submit"
-          className="rounded-lg bg-emerald-600 px-5 py-3 text-white hover:bg-emerald-500"
-        >
-          Guardar Libro
-        </button>
+          {/* 🌟 4. AGREGAMOS UN BOTÓN OPCIONAL DE CANCELAR PARA MEJORAR LA UX */}
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            className="rounded-lg bg-slate-800 px-5 py-3 text-white hover:bg-slate-700 transition cursor-pointer"
+          >
+            Cancelar
+          </button>
+        </div>
       </form>
     </div>
   );

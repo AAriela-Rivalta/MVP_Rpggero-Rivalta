@@ -4,6 +4,11 @@ import {
   devolverPrestamo,
   actualizarFechaPrestamo,
 } from "./prestamoModel.js";
+import {
+  ExtensionContext,
+  ExtensionEstandarStrategy,
+  ExtensionAcademicaStrategy,
+} from "./extensionStrategy.js";
 
 export async function createPrestamo(req, res) {
   try {
@@ -70,23 +75,29 @@ export async function returnLibro(req, res) {
   }
 }
 
-// 🌟 NUEVA FUNCIÓN CONTROLADORA
 export async function extenderPrestamo(req, res) {
   try {
-    const { libro_id, nueva_fecha_devolucion } = req.body;
+    const { libro_id, fecha_actual, tipo_extension } = req.body;
 
-    // Ejecuta el UPDATE directo sobre la fila que ya existe
+    // Seleccionamos la estrategia dinámicamente
+    let estrategia = ExtensionEstandarStrategy;
+    if (tipo_extension === "academica") {
+      estrategia = ExtensionAcademicaStrategy;
+    }
+
+    const context = new ExtensionContext(estrategia);
+    const nueva_fecha_devolucion = context.ejecutarEstrategia(
+      fecha_actual || new Date(),
+    );
+
     await actualizarFechaPrestamo(libro_id, nueva_fecha_devolucion);
 
     res.json({
       success: true,
-      message: "Plazo de préstamo extendido correctamente",
+      message: `Plazo extendido correctamente usando estrategia: ${tipo_extension || "estandar"}`,
+      nuevaFecha: nueva_fecha_devolucion,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
+    res.status(500).json({ success: false, error: error.message });
   }
 }

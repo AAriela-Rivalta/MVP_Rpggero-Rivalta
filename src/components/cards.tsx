@@ -1,6 +1,11 @@
 import { useState } from "react";
 // 🌟 Agregamos extenderLibroApi a tus importaciones de la API
-import { prestarLibro, devolverLibro, extenderLibroApi } from "../api";
+import {
+  prestarLibro,
+  devolverLibro,
+  extenderLibroApi,
+  eliminarLibroApi,
+} from "../api";
 import { Link } from "react-router-dom";
 
 type CardProps = {
@@ -31,32 +36,31 @@ export default function Cards({
   // Lógica de fechas base para el modal de préstamo nuevo
   const hoy = new Date();
   const fechaPrestamo = hoy.toISOString().split("T")[0];
-  const fechaDevolucionBase = "2026-06-01";
+  const unaSemanaDespues = new Date();
+  unaSemanaDespues.setDate(hoy.getDate() + 7);
+  const fechaDevolucionBase = unaSemanaDespues.toISOString().split("T")[0];
 
   // ==========================================
   // 🌟 FUNCIÓN PARA EXTENDER PRÉSTAMO 1 SEMANA
   // ==========================================
   async function extenderPrestamoHandler() {
     try {
-      // Tomamos la fecha de vencimiento actual que viene de la BD o la base de respaldo
-      const fechaActualBase = fecha_devolucion
-        ? new Date(fecha_devolucion)
-        : new Date(fechaDevolucionBase);
+      // Usamos la fecha que ya viene de la base de datos (o la de hoy si no existiera)
+      const fechaBase = fecha_devolucion
+        ? fecha_devolucion.split("T")[0]
+        : fechaDevolucionBase;
 
-      // Sumamos automáticamente 7 días sobre el objeto Date
-      fechaActualBase.setDate(fechaActualBase.getDate() + 7);
-      const nuevaFechaDevolucion = fechaActualBase.toISOString().split("T")[0];
+      // Invocamos a la API pasándole el tipo de extensión (el backend calcula el resto)
+      const data = await extenderLibroApi(id, fechaBase, "estandar");
 
-      // 🌟 CORRECCIÓN: En lugar de prestarLibro (INSERT), llamamos a tu nueva API de extensión (UPDATE)
-      await extenderLibroApi(id, nuevaFechaDevolucion);
-
-      setMensaje(
-        `Préstamo extendido con éxito hasta el ${nuevaFechaDevolucion}`,
-      );
-
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
+      if (data.success) {
+        setMensaje(`Préstamo extendido con éxito hasta el ${data.nuevaFecha}`);
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } else {
+        setMensaje("Error: " + data.error);
+      }
     } catch (error) {
       console.error(error);
       setMensaje("Error al extender el préstamo");
@@ -191,6 +195,33 @@ export default function Cards({
           >
             Editar
           </Link>
+
+          {isDisponible && (
+            <button
+              onClick={async () => {
+                if (
+                  window.confirm(
+                    `¿Estás seguro de que querés eliminar "${nombre}"?`,
+                  )
+                ) {
+                  try {
+                    const data = await eliminarLibroApi(id);
+                    if (data.success) {
+                      setMensaje("Libro eliminado con éxito");
+                      setTimeout(() => window.location.reload(), 1000);
+                    } else {
+                      alert(data.error);
+                    }
+                  } catch {
+                    alert("Error al intentar eliminar el libro");
+                  }
+                }
+              }}
+              className="rounded-lg bg-red-600 px-4 py-2 text-white transition hover:bg-red-500 text-center"
+            >
+              Eliminar
+            </button>
+          )}
         </div>
       </article>
 

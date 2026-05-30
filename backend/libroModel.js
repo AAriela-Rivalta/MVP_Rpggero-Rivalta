@@ -20,13 +20,16 @@ export async function findAllLibros() {
 export async function insertLibro(libro) {
   const { nombre, descripcion, categoria, disponibilidad } = libro;
 
+  // 🌟 REG REGLA DE NEGOCIO: Si no viene, es true (1) por defecto
+  const disponibilidadReal = (disponibilidad ?? true) ? 1 : 0;
+
   const [result] = await pool.query(
     `
     INSERT INTO libros
     (nombre, descripcion, categoria, disponibilidad)
     VALUES (?, ?, ?, ?)
     `,
-    [nombre, descripcion, categoria, disponibilidad],
+    [nombre, descripcion, categoria, disponibilidadReal], // 💡 ¡CORREGIDO! Ahora sí pasa el 1
   );
 
   return result;
@@ -36,12 +39,13 @@ export async function editLibro(id, libro) {
   const libroActual = await findLibroById(id);
 
   const nombre = libro.nombre ?? libroActual.nombre;
-
   const descripcion = libro.descripcion ?? libroActual.descripcion;
-
   const categoria = libro.categoria ?? libroActual.categoria;
 
-  const disponibilidad = libro.disponibilidad ?? libroActual.disponibilidad;
+  let disponibilidadReal = libroActual.disponibilidad;
+  if (libro.disponibilidad !== undefined) {
+    disponibilidadReal = libro.disponibilidad ? 1 : 0;
+  }
 
   const [result] = await pool.query(
     `
@@ -53,7 +57,7 @@ export async function editLibro(id, libro) {
       disponibilidad = ?
     WHERE id = ?
     `,
-    [nombre, descripcion, categoria, disponibilidad, id],
+    [nombre, descripcion, categoria, disponibilidadReal, id],
   );
 
   return result;
@@ -62,4 +66,9 @@ export async function editLibro(id, libro) {
 export async function findLibroById(id) {
   const [rows] = await pool.query("SELECT * FROM libros WHERE id = ?", [id]);
   return rows[0] || null;
+}
+
+export async function deleteLibro(id) {
+  const [result] = await pool.query("DELETE FROM libros WHERE id = ?", [id]);
+  return result;
 }

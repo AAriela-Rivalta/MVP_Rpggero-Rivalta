@@ -73,12 +73,20 @@ export async function devolverLibro(id: number) {
 
 export async function extenderLibroApi(
   libro_id: number,
-  nueva_fecha_devolucion: string,
+  fecha_actual: string,
+  tipo_extension: "estandar" | "academica" = "estandar",
 ) {
   const response = await fetch("http://localhost:3000/api/prestamos/extender", {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ libro_id, nueva_fecha_devolucion }),
+    body: JSON.stringify({ libro_id, fecha_actual, tipo_extension }),
+  });
+  return response.json();
+}
+
+export async function eliminarLibroApi(id: number) {
+  const response = await fetch(`${API_URL}/libros/${id}`, {
+    method: "DELETE",
   });
   return response.json();
 }
