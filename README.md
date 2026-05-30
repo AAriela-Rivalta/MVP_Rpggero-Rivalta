@@ -334,7 +334,7 @@ biblioteca-mvp/
 ## Integrantes
 
 - Rivalta Ariela
-- Estefenia Roggero
+- Roggero Estefania
 
 ---
 
