@@ -31,6 +31,10 @@ export default function Cards({
   const [mensaje, setMensaje] = useState("");
   const [nombrePrestamo, setNombrePrestamo] = useState("");
 
+  const [tipoExtension, setTipoExtension] = useState<"estandar" | "academica">(
+    "estandar",
+  );
+
   const isDisponible = disponibilidad === true || disponibilidad === 1;
 
   // Lógica de fechas base para el modal de préstamo nuevo
@@ -51,7 +55,7 @@ export default function Cards({
         : fechaDevolucionBase;
 
       // Invocamos a la API pasándole el tipo de extensión (el backend calcula el resto)
-      const data = await extenderLibroApi(id, fechaBase, "estandar");
+      const data = await extenderLibroApi(id, fechaBase, tipoExtension);
 
       if (data.success) {
         setMensaje(`Préstamo extendido con éxito hasta el ${data.nuevaFecha}`);
@@ -179,22 +183,35 @@ export default function Cards({
             </button>
           )}
 
-          {/* BOTÓN EXTENDER */}
-          {!isDisponible && (
-            <button
-              onClick={extenderPrestamoHandler}
-              className="rounded-lg bg-purple-600 px-4 py-2 text-white transition hover:bg-purple-500"
-            >
-              Extender
-            </button>
-          )}
-
           <Link
             to={`/editar/${id}`}
             className="rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-500 text-center"
           >
             Editar
           </Link>
+
+          {/* BOTÓN EXTENDER */}
+          {!isDisponible && (
+            <div className="flex items-center gap-2 rounded-lg border border-purple-200 bg-purple-50 p-1">
+              <select
+                value={tipoExtension}
+                onChange={(e) =>
+                  setTipoExtension(e.target.value as "estandar" | "academica")
+                }
+                className="rounded bg-white p-1 text-sm font-medium text-purple-800 border border-purple-300 focus:outline-none cursor-pointer"
+              >
+                <option value="estandar">Normal (+7 días)</option>
+                <option value="academica">Académica (+14 días)</option>
+              </select>
+
+              <button
+                onClick={extenderPrestamoHandler}
+                className="rounded-lg bg-purple-600 px-3 py-1.5 text-sm text-white transition hover:bg-purple-500 font-semibold"
+              >
+                Extender prestamo
+              </button>
+            </div>
+          )}
 
           {isDisponible && (
             <button
