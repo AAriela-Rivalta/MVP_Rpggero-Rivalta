@@ -29,7 +29,7 @@ export async function createPrestamo(req, res) {
       SET disponibilidad = 0
       WHERE id = ?
       `,
-      [libro_id], // <- Corregido: antes decía [id] y fallaba
+      [libro_id],
     );
 
     res.json({
@@ -59,7 +59,7 @@ export async function returnLibro(req, res) {
       SET disponibilidad = 1
       WHERE id = ?
       `,
-      [id], // <- Corregido: antes decía [libro_id] y rompía el servidor
+      [id],
     );
 
     res.json({
@@ -75,6 +75,7 @@ export async function returnLibro(req, res) {
   }
 }
 
+//STRATEGY
 export async function extenderPrestamo(req, res) {
   try {
     const { libro_id, fecha_actual, tipo_extension } = req.body;

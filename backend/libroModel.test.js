@@ -41,6 +41,7 @@ describe("Pruebas Unitarias en libroModel.js", () => {
 
     const resultado = await findAllLibros();
 
+    // verifica que los resultados obtenidos son iguales a los esperados
     expect(resultado).toEqual(mockRows);
     expect(pool.query).toHaveBeenCalledTimes(1);
   });
@@ -48,10 +49,12 @@ describe("Pruebas Unitarias en libroModel.js", () => {
   // TEST 2: Caso de éxito - Buscar libro por ID existente
   it("findLibroById debería retornar el libro correspondiente si el ID existe", async () => {
     const mockLibro = { id: 5, nombre: "Rayuela", disponibilidad: 1 };
+    //simulaccion que la bd devuelve un libro
     pool.query.mockResolvedValue([[mockLibro]]);
 
     const resultado = await findLibroById(5);
 
+    //Comprueba que la función devuelva el objeto esperado
     expect(resultado).toEqual(mockLibro);
     expect(pool.query).toHaveBeenCalledWith(
       "SELECT * FROM libros WHERE id = ?",
@@ -64,7 +67,7 @@ describe("Pruebas Unitarias en libroModel.js", () => {
     pool.query.mockResolvedValue([[]]); // Simulamos que la consulta vuelve vacía
 
     const resultado = await findLibroById(999);
-
+    // se verifica que devueva null
     expect(resultado).toBeNull();
   });
 
@@ -76,23 +79,26 @@ describe("Pruebas Unitarias en libroModel.js", () => {
       categoria: "Literatura",
       disponibilidad: 1,
     };
-
+    //Se simula que MySQL insertó el libro y generó el ID 10
     pool.query.mockResolvedValue([{ insertId: 10 }]);
 
     const resultado = await insertLibro(nuevoLibro);
-
+    //Comprueba que la respuesta contiene el ID generado.
     expect(resultado).toHaveProperty("insertId", 10);
+    //Verifica que se ejecutó una única consulta.
     expect(pool.query).toHaveBeenCalledTimes(1);
   });
 });
 
 // TEST 5: Caso de éxito - Eliminar un libro
 it("deleteLibro debería ejecutar el DELETE con el ID correspondiente", async () => {
+  //Se simula que una fila fue eliminada.
   pool.query.mockResolvedValue([{ affectedRows: 1 }]);
 
   const resultado = await deleteLibro(14);
-
+  //Comprueba que la operación afectó un registro.
   expect(resultado).toHaveProperty("affectedRows", 1);
+  //Verifica que se ejecutó exactamente la consulta SQL esperada y con el ID correctoF
   expect(pool.query).toHaveBeenCalledWith(
     "DELETE FROM libros WHERE id = ?",
     [14],

@@ -1,4 +1,6 @@
 import { pool } from "./db.js";
+//todas las funciones pueden ejecutar consultas SQL utilizando
+//await pool.query(...)
 
 export async function findAllLibros() {
   const [rows] = await pool.query(`
@@ -18,9 +20,10 @@ export async function findAllLibros() {
 }
 
 export async function insertLibro(libro) {
+  //Extrae los datos recibidos desde el controlador
   const { nombre, descripcion, categoria, disponibilidad } = libro;
 
-  // 🌟 REG REGLA DE NEGOCIO: Si no viene, es true (1) por defecto
+  // REG REGLA DE NEGOCIO: Si no viene, es true (1) por defecto
   const disponibilidadReal = (disponibilidad ?? true) ? 1 : 0;
 
   const [result] = await pool.query(
@@ -29,7 +32,7 @@ export async function insertLibro(libro) {
     (nombre, descripcion, categoria, disponibilidad)
     VALUES (?, ?, ?, ?)
     `,
-    [nombre, descripcion, categoria, disponibilidadReal], // 💡 ¡CORREGIDO! Ahora sí pasa el 1
+    [nombre, descripcion, categoria, disponibilidadReal],
   );
 
   return result;
