@@ -8,7 +8,6 @@ import {
   removeLibro,
 } from "./backend/libroController.js";
 
-// CORRECCIÓN: Agregamos extenderPrestamo en las llaves del import
 import {
   createPrestamo,
   returnLibro,
@@ -49,9 +48,9 @@ app.put("/api/devolver/:id", returnLibro);
 
 app.put("/api/prestamos/extender", extenderPrestamo);
 
-//Inicia el servidor y lo deja escuchando peticiones en el puerto configurado.
 app.delete("/api/libros/:id", removeLibro);
 
+//Inicia el servidor y lo deja escuchando peticiones en el puerto configurado.
 app.listen(PORT, () => {
   console.log(`Backend API escuchando en http://localhost:${PORT}`);
 

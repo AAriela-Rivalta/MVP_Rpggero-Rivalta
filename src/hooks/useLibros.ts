@@ -14,11 +14,10 @@ export function useLibros() {
         const data = await getLibros();
 
         setLibros(data.rows);
-
       } catch (error) {
         console.error(error);
         setError("No se pudieron cargar los libros");
-      }finally {
+      } finally {
         setLoading(false);
       }
     }
@@ -26,7 +25,7 @@ export function useLibros() {
     cargarLibros();
   }, []);
 
-   return {
+  return {
     libros,
     loading,
     error,
